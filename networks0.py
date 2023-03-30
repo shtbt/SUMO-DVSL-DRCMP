@@ -78,7 +78,7 @@ class rm_vsl_co(object):
             routes.write("""<vType id="type1" color="255,190,180" length = "8.0" carFollowModel = "IDM" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write("""<vType id="type2" color="22,255,255" length = "3.5" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write("""<vType id="type3" color="22,55,255" length = "3.5" carFollowModel = "IDM" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
-            routes.write("""<vType id="type4" color="22,55,255" length = "3.5" carFollowModel = "IDM" maxSpeed="70" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
+            routes.write("""<vType id="type4" color="22,55,255" length = "3.5" carFollowModel = "IDM" maxSpeed="19" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write('\n')
             for i in range(len(self.edges)):
                 routes.write("""<route id=\"""" + str(i) + """\"""" + """ edges=\"""" + self.edges[i] + """\"/> """ + '\n')
