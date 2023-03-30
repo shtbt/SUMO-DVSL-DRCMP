@@ -10,6 +10,8 @@ from __future__ import division
 import os
 import sys
 import numpy as np
+import random
+
 
 tools = '/usr/share/sumo/tools'
 sys.path.append(tools)
@@ -76,6 +78,7 @@ class rm_vsl_co(object):
             routes.write("""<vType id="type1" color="255,190,180" length = "8.0" carFollowModel = "IDM" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write("""<vType id="type2" color="22,255,255" length = "3.5" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write("""<vType id="type3" color="22,55,255" length = "3.5" carFollowModel = "IDM" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
+            routes.write("""<vType id="type4" color="22,55,255" length = "3.5" carFollowModel = "IDM" maxSpeed="70" speedFactor="normc(1,0.1,0.2,2)" lcSpeedGain = "1"/>""" + '\n')
             routes.write('\n')
             for i in range(len(self.edges)):
                 routes.write("""<route id=\"""" + str(i) + """\"""" + """ edges=\"""" + self.edges[i] + """\"/> """ + '\n')
@@ -87,8 +90,12 @@ class rm_vsl_co(object):
                 dtime = np.random.uniform(0+3600*hours,3600+3600*hours,size=(int(vNum),))            
                 dtime.sort()
                 for veh in range(int(vNum)):
-                    typev = np.random.choice([0,1,2,3], p = self.v_ratio)
-                    vType = 'type' + str(typev)
+                    comp_selection=random.choices(population=[0,1],weights=[0.1,0.9])[0]
+                    if(comp_selection==0):
+                        vType = 'type4'
+                    else:
+                        typev = np.random.choice([0,1,2,3], p = self.v_ratio)
+                        vType = 'type' + str(typev)
                     route = np.random.choice([0,1,2], p =[m_in*self.m1a[0]/vNum, m_in*self.m1a[1]/vNum, r3_in/vNum])
                     routes.write("""<vehicle id=\"""" + str(temp+veh) + """\" depart=\"""" + str(round(dtime[veh],2)) + """\" type=\"""" + str(vType) + """\" route=\"""" + str(route) + """\" departLane=\""""'random'"""\"/>""" + '\n')        
                     routes.write('\n')
