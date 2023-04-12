@@ -7,12 +7,16 @@ Created on Thu Dec  6 01:36:24 2018
 """
 
 from __future__ import division
+
+import datetime
+
 # from Priority_Replay import SumTree, Memory
 import tensorflow.compat.v1 as tf
 
 tf.compat.v1.disable_eager_execution()
 import numpy as np
 import time
+from datetime import *
 
 import os
 import sys
@@ -196,8 +200,11 @@ pmx = 0
 oflow = 0
 bspeed = 0
 traveltime = 'meanTravelTime='
+with open('violations.csv', 'a') as file:
+    file.write('-=-=-=-=-=-=-=-=-=-=-=-=-=-='+str(datetime.now()) + '\n')
 for ep in range(EP_MAX):
     speed_violation_dict={}
+    max_speed_dict = {}
     time_start = time.time()
     co = 0
     hc = 0
@@ -225,7 +232,7 @@ for ep in range(EP_MAX):
         s_, r, simulationSteps, oflow_temp, bspeed_temp, co_temp, hc_temp, nox_temp, pmx_temp = net.run_step(v)
 
         for veh in traci.vehicle.getIDList():
-            speed_violation_dict.setdefault(veh,list(np.zeros_like(v)))
+            speed_violation_dict.setdefault(veh,list(-1*np.ones_like(v)))
             viol=speed_violation_dict[veh]
             lane_ind=net.VSLlist.index(traci.vehicle.getLaneID(veh)) if traci.vehicle.getLaneID(veh) in net.VSLlist else -1
             veh_type=traci.vehicle.getTypeID(veh)
@@ -235,6 +242,23 @@ for ep in range(EP_MAX):
             current_speed=traci.vehicle.getSpeed(veh)
             viol[lane_ind]=1 if current_speed>max_lane_speed else 0
             speed_violation_dict[veh]=viol
+
+        # total_veh_lanes = 0
+        # violations = 0
+        # for k, v in speed_violation_dict.items():
+        #     veh_id = k
+        #     speed_list = v
+        #     for val in speed_list:
+        #         if (val != -1):
+        #             total_veh_lanes += 1
+        #         if (val == 1):
+        #             violations += 1
+
+
+
+
+
+
 
 
 
@@ -258,6 +282,21 @@ for ep in range(EP_MAX):
             vsl_controller.learn()
         stime = stime_
         ep_r += r
+
+    total_veh_lanes = 0
+    violations = 0
+    for k, v in speed_violation_dict.items():
+        veh_id = k
+        speed_list = v
+        for val in speed_list:
+            if (val != -1):
+                total_veh_lanes += 1
+            if (val == 1):
+                violations += 1
+    with open('violations.csv','a') as file:
+        file.write(str(ep)+','+str(total_veh_lanes)+','+str(violations)+'\n')
+
+
     all_ep_r.append(ep_r)
     all_co.append(co / 1000)
     all_hc.append(hc / 1000)
@@ -279,6 +318,8 @@ for ep in range(EP_MAX):
         vsl_controller.savemodel()
     time_end = time.time()
     print('totally cost', time_end - time_start)
+
+
 
 '''
 Comparison with no VSL control
